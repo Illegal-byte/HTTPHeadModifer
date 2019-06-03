@@ -1,20 +1,18 @@
 package burp;
 
+import java.io.*;
 import javax.swing.*;
+import java.util.*;
+import java.awt.event.*;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Menu implements IContextMenuFactory {
+public class Menu implements IContextMenuFactory
+{
     private IBurpExtenderCallbacks callbacks;
     private final IExtensionHelpers m_helpers;
     private PrintWriter stdout;
     private PrintWriter stderr;
     private JMenu httpHeadModiferMenu;
-    //IPÏà¹ØÍ·
+    private JMenuItem addAllIP;
     private JMenuItem addXFF;
     private JMenuItem addXForwardedHost;
     private JMenuItem addXRI;
@@ -24,7 +22,6 @@ public class Menu implements IContextMenuFactory {
     private JMenuItem addClientIP;
     private JMenuItem addXClientIP;
     private JMenuItem addXRealIP;
-    //ÇÐ»»UA
     private JMenu firefoxUA;
     private JMenuItem ffAndroidMobileUA;
     private JMenuItem ffAndroidTableUA;
@@ -38,11 +35,9 @@ public class Menu implements IContextMenuFactory {
     private JMenuItem chromeUbuntuUA;
     private JMenuItem chromeWinUA;
     private JMenuItem chromeiPhoneUA;
-    
     private JMenu edgeUA;
     private JMenuItem edge12UA;
     private JMenuItem edge13UA;
-    
     private JMenu ieUA;
     private JMenuItem ie11UA;
     private JMenuItem ie10UA;
@@ -50,18 +45,14 @@ public class Menu implements IContextMenuFactory {
     private JMenuItem ie8UA;
     private JMenuItem ie7UA;
     private JMenuItem ie6UA;
-    
     private JMenu operaUA;
     private JMenuItem operaMacUA;
-    private JMenuItem operaWinUA;    
-    
-    
+    private JMenuItem operaWinUA;
     private JMenu safariUA;
     private JMenuItem safariMacUA;
     private JMenuItem safariWinUA;
     private JMenuItem safariiPadUA;
-    private JMenuItem safariiPhoneUA;    
-    
+    private JMenuItem safariiPhoneUA;
     private JMenu androidUA;
     private JMenuItem androidNexus7UA;
     private JMenuItem androidGalaxyS3UA;
@@ -70,466 +61,386 @@ public class Menu implements IContextMenuFactory {
     private JMenuItem win7PhoneUA;
     private JMenuItem win75PhoneUA;
     private JMenuItem win8PhoneUA;
-    
     private JMenu iosUA;
     private JMenuItem iosiPadUA;
     private JMenuItem iosiPhoneUA;
     private JMenuItem iosiPodUA;
-    
     private JMenu spiderUA;
     private JMenuItem baiduSpider4pcUA;
     private JMenuItem baiduSpider4appUA;
     private JMenuItem googleSpiderUA;
     private JMenuItem bingSpiderUA;
     private JMenuItem slurpSpiderUA;
-    
     private JMenuItem addOrigin;
-    
     private JMenuItem updateCookie;
     
-    public Menu(IBurpExtenderCallbacks callbacks) {
+    public Menu(final IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
-        m_helpers = callbacks.getHelpers();
-        this.stdout = new PrintWriter(callbacks.getStdout(),true);
-        this.stderr = new PrintWriter(callbacks.getStderr(),true);
+        this.m_helpers = callbacks.getHelpers();
+        this.stdout = new PrintWriter(callbacks.getStdout(), true);
+        this.stderr = new PrintWriter(callbacks.getStderr(), true);
     }
-
+    
+    @Override
     public List<JMenuItem> createMenuItems(final IContextMenuInvocation invocation) {
-        List<JMenuItem> menus = new ArrayList();
-
-        if (invocation.getToolFlag() != IBurpExtenderCallbacks.TOOL_INTRUDER && invocation.getInvocationContext() != IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST){
+        final List<JMenuItem> menus = new ArrayList<JMenuItem>();
+        if (invocation.getToolFlag() != 32 && invocation.getInvocationContext() != 0) {
             return menus;
         }
-        
-        httpHeadModiferMenu = new JMenu("HTTPHeadModifer");
-        addXFF = new JMenuItem("add X-Forwarded-For");
-        addXForwardedHost = new JMenuItem("add X-Forwarded-Host");
-        addXRI = new JMenuItem("add X-remote-IP");
-        addXOI = new JMenuItem("add X-Originating-IP");
-        addXRA = new JMenuItem("add X-remote-addr");
-        addTrueClientIP = new JMenuItem("add True-Client-IP");
-        addClientIP = new JMenuItem("add Client-IP");
-        addXClientIP = new JMenuItem("add X-Client-IP");
-        addXRealIP = new JMenuItem("add X-Real-IP");
-        //fifoxä¯ÀÀÆ÷UserAgent
-        firefoxUA = new JMenu("Firefox UserAgent");
-        ffAndroidMobileUA = new JMenuItem("Firefox on Android Mobile");
-        ffAndroidTableUA = new JMenuItem("Firefox on Android Tablet");
-        ffMacUA = new JMenuItem("Firefox on Mac");
-        ffUbuntuUA = new JMenuItem("Firefox on Ubuntu");
-        ffWinUA = new JMenuItem("Firefox on Windows");
-        
-        chromeUA = new JMenu("Chorme UserAgent");
-        chromeAndroidMobileUA = new JMenuItem("Chrome on Android Mobile");
-        chromeAndroidTableUA = new JMenuItem("Chrome on Android Tablet");
-        chromeMacUA = new JMenuItem("Chrome on Mac");
-        chromeUbuntuUA = new JMenuItem("Chrome on Ubuntu");
-        chromeWinUA = new JMenuItem("Chrome on Windows");
-        chromeiPhoneUA = new JMenuItem("Chrome on iPhone");
-        
-        edgeUA = new JMenu("Edge UserAgent");
-        edge12UA = new JMenuItem("Edge 12");
-        edge13UA = new JMenuItem("Edge13");
-        
-        ieUA = new JMenu("IE UserAgent");
-        ie11UA = new JMenuItem("Internet Explorer 11");
-        ie10UA = new JMenuItem("Internet Explorer 10");
-        ie9UA = new JMenuItem("Internet Explorer 9");
-        ie8UA = new JMenuItem("Internet Explorer 8");
-        ie7UA = new JMenuItem("Internet Explorer 7");
-        ie6UA = new JMenuItem("Internet Explorer 6");
-        
-        operaUA = new JMenu("Opera UserAgent");
-        operaMacUA = new JMenuItem("Opera on Mac");
-        operaWinUA = new JMenuItem("Opera on Windows");
-        
-        safariUA = new JMenu("Safari UserAgent");
-        safariMacUA = new JMenuItem("Safari on Mac");
-        safariWinUA = new JMenuItem("Safari on Windows");
-        safariiPadUA = new JMenuItem("Safari on iPad");
-        safariiPhoneUA = new JMenuItem("Safari on iPhone");
-
-        androidUA = new JMenu("Android UserAgent");
-        androidNexus7UA = new JMenuItem("Nexus 7 (Tablet)");
-        androidGalaxyS3UA = new JMenuItem("Samsung Galaxy S3 (Handset)");
-        androidGalaxyTabUA = new JMenuItem("Samsung Galaxy Tab (Tablet)");        
-        
-        winPhoneUA = new JMenu("Windows phone UserAgent");
-        win7PhoneUA = new JMenuItem("Windows Phone 7");
-        win75PhoneUA = new JMenuItem("Windows Phone 7.5");
-        win8PhoneUA = new JMenuItem("Windows Phone 8");
-        
-        iosUA = new JMenu("IOS UserAgent");
-        iosiPadUA = new JMenuItem("iPad");
-        iosiPhoneUA = new JMenuItem("iPhone");
-        iosiPodUA = new JMenuItem("iPod");
-        
-        spiderUA = new JMenu("Spider UserAgent");
-        baiduSpider4pcUA = new JMenuItem("Badu Spider PC");
-        baiduSpider4appUA = new JMenuItem("Badu Spider App");
-        googleSpiderUA = new JMenuItem("Googlebot (Google's spider)");
-        bingSpiderUA = new JMenuItem("BingBot (Bing's spider)");
-        slurpSpiderUA = new JMenuItem("Slurp! (Yahoo's spider)");
-        
-        addOrigin = new JMenuItem("add Origin");
-        updateCookie = new JMenuItem("Update Cookie");
-        firefoxUA.add(ffAndroidMobileUA);
-        firefoxUA.add(ffAndroidTableUA);
-        firefoxUA.add(ffMacUA);
-        firefoxUA.add(ffUbuntuUA);
-        firefoxUA.add(ffWinUA);
-        
-        chromeUA.add(chromeAndroidMobileUA);
-        chromeUA.add(chromeAndroidTableUA);
-        chromeUA.add(chromeMacUA);
-        chromeUA.add(chromeUbuntuUA);
-        chromeUA.add(chromeWinUA);
-        chromeUA.add(chromeiPhoneUA);
-        
-        edgeUA.add(edge12UA);
-        edgeUA.add(edge13UA);
-        
-        ieUA.add(ie11UA);
-        ieUA.add(ie10UA);
-        ieUA.add(ie9UA);
-        ieUA.add(ie8UA);
-        ieUA.add(ie7UA);
-        ieUA.add(ie6UA);
-        
-        operaUA.add(operaMacUA);
-        operaUA.add(operaWinUA);
-        
-        safariUA.add(safariMacUA);
-        safariUA.add(safariWinUA);
-        safariUA.add(safariiPadUA);
-        safariUA.add(safariiPhoneUA);
-        
-        androidUA.add(androidNexus7UA);
-        androidUA.add(androidGalaxyS3UA);
-        androidUA.add(androidGalaxyTabUA);
-        
-        winPhoneUA.add(win7PhoneUA);
-        winPhoneUA.add(win75PhoneUA);
-        winPhoneUA.add(win8PhoneUA);
-        
-        iosUA.add(iosiPadUA);
-        iosUA.add(iosiPhoneUA);
-        iosUA.add(iosiPodUA);
-        
-        spiderUA.add(baiduSpider4pcUA);
-        spiderUA.add(baiduSpider4appUA);
-        spiderUA.add(googleSpiderUA);
-        spiderUA.add(bingSpiderUA);
-        spiderUA.add(slurpSpiderUA);
-        
-        httpHeadModiferMenu.add(addXFF);
-        httpHeadModiferMenu.add(addXForwardedHost);
-        httpHeadModiferMenu.add(addXRI);
-        httpHeadModiferMenu.add(addXOI);
-        httpHeadModiferMenu.add(addXRA);
-        httpHeadModiferMenu.add(addTrueClientIP);
-        httpHeadModiferMenu.add(addClientIP);
-        httpHeadModiferMenu.add(addXClientIP);
-        httpHeadModiferMenu.add(addXRealIP);
-        httpHeadModiferMenu.addSeparator();
-        httpHeadModiferMenu.add(firefoxUA);
-        httpHeadModiferMenu.add(chromeUA);
-        httpHeadModiferMenu.add(edgeUA);
-        httpHeadModiferMenu.add(ieUA);
-        httpHeadModiferMenu.add(operaUA);
-        httpHeadModiferMenu.add(safariUA);
-        httpHeadModiferMenu.add(androidUA);
-        httpHeadModiferMenu.add(winPhoneUA);
-        httpHeadModiferMenu.add(iosUA);
-        httpHeadModiferMenu.add(spiderUA);
-        httpHeadModiferMenu.addSeparator();
-        httpHeadModiferMenu.add(addOrigin);
-        httpHeadModiferMenu.addSeparator();
-        httpHeadModiferMenu.add(updateCookie);
-        
-        addXFF.addActionListener(new MenuActionManger(invocation));
-        addXForwardedHost.addActionListener(new MenuActionManger(invocation));
-        addXRI.addActionListener(new MenuActionManger(invocation));
-        addXOI.addActionListener(new MenuActionManger(invocation));
-        addXRA.addActionListener(new MenuActionManger(invocation));
-        addTrueClientIP.addActionListener(new MenuActionManger(invocation));
-        addClientIP.addActionListener(new MenuActionManger(invocation));
-        addXClientIP.addActionListener(new MenuActionManger(invocation));
-        addXRealIP.addActionListener(new MenuActionManger(invocation));
-        
-        ffAndroidMobileUA.addActionListener(new MenuActionManger(invocation));
-        ffAndroidTableUA.addActionListener(new MenuActionManger(invocation));
-        ffMacUA.addActionListener(new MenuActionManger(invocation));
-        ffUbuntuUA.addActionListener(new MenuActionManger(invocation));
-        ffWinUA.addActionListener(new MenuActionManger(invocation));
-        
-        chromeAndroidMobileUA.addActionListener(new MenuActionManger(invocation));
-        chromeAndroidTableUA.addActionListener(new MenuActionManger(invocation));
-        chromeMacUA.addActionListener(new MenuActionManger(invocation));
-        chromeUbuntuUA.addActionListener(new MenuActionManger(invocation));
-        chromeWinUA.addActionListener(new MenuActionManger(invocation));
-        chromeiPhoneUA.addActionListener(new MenuActionManger(invocation));
-        
-        edge12UA.addActionListener(new MenuActionManger(invocation));
-        edge13UA.addActionListener(new MenuActionManger(invocation));
-        
-        ie11UA.addActionListener(new MenuActionManger(invocation));
-        ie10UA.addActionListener(new MenuActionManger(invocation));
-        ie9UA.addActionListener(new MenuActionManger(invocation));
-        ie8UA.addActionListener(new MenuActionManger(invocation));
-        ie7UA.addActionListener(new MenuActionManger(invocation));
-        ie6UA.addActionListener(new MenuActionManger(invocation));
-        
-        operaMacUA.addActionListener(new MenuActionManger(invocation));
-        operaWinUA.addActionListener(new MenuActionManger(invocation));
-        
-        safariiPadUA.addActionListener(new MenuActionManger(invocation));
-        safariiPhoneUA.addActionListener(new MenuActionManger(invocation));
-        safariMacUA.addActionListener(new MenuActionManger(invocation));
-        safariWinUA.addActionListener(new MenuActionManger(invocation));
-        
-        androidNexus7UA.addActionListener(new MenuActionManger(invocation));
-        androidGalaxyS3UA.addActionListener(new MenuActionManger(invocation));
-        androidGalaxyTabUA.addActionListener(new MenuActionManger(invocation));
-        win7PhoneUA.addActionListener(new MenuActionManger(invocation));
-        win75PhoneUA.addActionListener(new MenuActionManger(invocation));
-        win8PhoneUA.addActionListener(new MenuActionManger(invocation));
-        
-        iosiPadUA.addActionListener(new MenuActionManger(invocation));
-        iosiPhoneUA.addActionListener(new MenuActionManger(invocation));
-        iosiPodUA.addActionListener(new MenuActionManger(invocation));
-        
-        baiduSpider4pcUA.addActionListener(new MenuActionManger(invocation));
-        baiduSpider4appUA.addActionListener(new MenuActionManger(invocation));
-        googleSpiderUA.addActionListener(new MenuActionManger(invocation));
-        bingSpiderUA.addActionListener(new MenuActionManger(invocation));
-        slurpSpiderUA.addActionListener(new MenuActionManger(invocation));
-        
-        addOrigin.addActionListener(new MenuActionManger(invocation));
-        updateCookie.addActionListener(new MenuActionManger(invocation));
-        menus.add(httpHeadModiferMenu);
+        this.httpHeadModiferMenu = new JMenu("HTTPHeadModifer");
+        this.addXFF = new JMenuItem("add X-Forwarded-For");
+        this.addXForwardedHost = new JMenuItem("add X-Forwarded-Host");
+        this.addXRI = new JMenuItem("add X-remote-IP");
+        this.addXOI = new JMenuItem("add X-Originating-IP");
+        this.addXRA = new JMenuItem("add X-remote-addr");
+        this.addTrueClientIP = new JMenuItem("add True-Client-IP");
+        this.addClientIP = new JMenuItem("add Client-IP");
+        this.addXClientIP = new JMenuItem("add X-Client-IP");
+        this.addXRealIP = new JMenuItem("add X-Real-IP");
+        this.addAllIP = new JMenuItem("add ALL(IP)");
+        this.firefoxUA = new JMenu("Firefox UserAgent");
+        this.ffAndroidMobileUA = new JMenuItem("Firefox on Android Mobile");
+        this.ffAndroidTableUA = new JMenuItem("Firefox on Android Tablet");
+        this.ffMacUA = new JMenuItem("Firefox on Mac");
+        this.ffUbuntuUA = new JMenuItem("Firefox on Ubuntu");
+        this.ffWinUA = new JMenuItem("Firefox on Windows");
+        this.chromeUA = new JMenu("Chorme UserAgent");
+        this.chromeAndroidMobileUA = new JMenuItem("Chrome on Android Mobile");
+        this.chromeAndroidTableUA = new JMenuItem("Chrome on Android Tablet");
+        this.chromeMacUA = new JMenuItem("Chrome on Mac");
+        this.chromeUbuntuUA = new JMenuItem("Chrome on Ubuntu");
+        this.chromeWinUA = new JMenuItem("Chrome on Windows");
+        this.chromeiPhoneUA = new JMenuItem("Chrome on iPhone");
+        this.edgeUA = new JMenu("Edge UserAgent");
+        this.edge12UA = new JMenuItem("Edge 12");
+        this.edge13UA = new JMenuItem("Edge13");
+        this.ieUA = new JMenu("IE UserAgent");
+        this.ie11UA = new JMenuItem("Internet Explorer 11");
+        this.ie10UA = new JMenuItem("Internet Explorer 10");
+        this.ie9UA = new JMenuItem("Internet Explorer 9");
+        this.ie8UA = new JMenuItem("Internet Explorer 8");
+        this.ie7UA = new JMenuItem("Internet Explorer 7");
+        this.ie6UA = new JMenuItem("Internet Explorer 6");
+        this.operaUA = new JMenu("Opera UserAgent");
+        this.operaMacUA = new JMenuItem("Opera on Mac");
+        this.operaWinUA = new JMenuItem("Opera on Windows");
+        this.safariUA = new JMenu("Safari UserAgent");
+        this.safariMacUA = new JMenuItem("Safari on Mac");
+        this.safariWinUA = new JMenuItem("Safari on Windows");
+        this.safariiPadUA = new JMenuItem("Safari on iPad");
+        this.safariiPhoneUA = new JMenuItem("Safari on iPhone");
+        this.androidUA = new JMenu("Android UserAgent");
+        this.androidNexus7UA = new JMenuItem("Nexus 7 (Tablet)");
+        this.androidGalaxyS3UA = new JMenuItem("Samsung Galaxy S3 (Handset)");
+        this.androidGalaxyTabUA = new JMenuItem("Samsung Galaxy Tab (Tablet)");
+        this.winPhoneUA = new JMenu("Windows phone UserAgent");
+        this.win7PhoneUA = new JMenuItem("Windows Phone 7");
+        this.win75PhoneUA = new JMenuItem("Windows Phone 7.5");
+        this.win8PhoneUA = new JMenuItem("Windows Phone 8");
+        this.iosUA = new JMenu("IOS UserAgent");
+        this.iosiPadUA = new JMenuItem("iPad");
+        this.iosiPhoneUA = new JMenuItem("iPhone");
+        this.iosiPodUA = new JMenuItem("iPod");
+        this.spiderUA = new JMenu("Spider UserAgent");
+        this.baiduSpider4pcUA = new JMenuItem("Badu Spider PC");
+        this.baiduSpider4appUA = new JMenuItem("Badu Spider App");
+        this.googleSpiderUA = new JMenuItem("Googlebot (Google's spider)");
+        this.bingSpiderUA = new JMenuItem("BingBot (Bing's spider)");
+        this.slurpSpiderUA = new JMenuItem("Slurp! (Yahoo's spider)");
+        this.addOrigin = new JMenuItem("add Origin");
+        this.updateCookie = new JMenuItem("Update Cookie");
+        this.firefoxUA.add(this.ffAndroidMobileUA);
+        this.firefoxUA.add(this.ffAndroidTableUA);
+        this.firefoxUA.add(this.ffMacUA);
+        this.firefoxUA.add(this.ffUbuntuUA);
+        this.firefoxUA.add(this.ffWinUA);
+        this.chromeUA.add(this.chromeAndroidMobileUA);
+        this.chromeUA.add(this.chromeAndroidTableUA);
+        this.chromeUA.add(this.chromeMacUA);
+        this.chromeUA.add(this.chromeUbuntuUA);
+        this.chromeUA.add(this.chromeWinUA);
+        this.chromeUA.add(this.chromeiPhoneUA);
+        this.edgeUA.add(this.edge12UA);
+        this.edgeUA.add(this.edge13UA);
+        this.ieUA.add(this.ie11UA);
+        this.ieUA.add(this.ie10UA);
+        this.ieUA.add(this.ie9UA);
+        this.ieUA.add(this.ie8UA);
+        this.ieUA.add(this.ie7UA);
+        this.ieUA.add(this.ie6UA);
+        this.operaUA.add(this.operaMacUA);
+        this.operaUA.add(this.operaWinUA);
+        this.safariUA.add(this.safariMacUA);
+        this.safariUA.add(this.safariWinUA);
+        this.safariUA.add(this.safariiPadUA);
+        this.safariUA.add(this.safariiPhoneUA);
+        this.androidUA.add(this.androidNexus7UA);
+        this.androidUA.add(this.androidGalaxyS3UA);
+        this.androidUA.add(this.androidGalaxyTabUA);
+        this.winPhoneUA.add(this.win7PhoneUA);
+        this.winPhoneUA.add(this.win75PhoneUA);
+        this.winPhoneUA.add(this.win8PhoneUA);
+        this.iosUA.add(this.iosiPadUA);
+        this.iosUA.add(this.iosiPhoneUA);
+        this.iosUA.add(this.iosiPodUA);
+        this.spiderUA.add(this.baiduSpider4pcUA);
+        this.spiderUA.add(this.baiduSpider4appUA);
+        this.spiderUA.add(this.googleSpiderUA);
+        this.spiderUA.add(this.bingSpiderUA);
+        this.spiderUA.add(this.slurpSpiderUA);
+        this.httpHeadModiferMenu.add(this.addXFF);
+        this.httpHeadModiferMenu.add(this.addXForwardedHost);
+        this.httpHeadModiferMenu.add(this.addXRI);
+        this.httpHeadModiferMenu.add(this.addXOI);
+        this.httpHeadModiferMenu.add(this.addXRA);
+        this.httpHeadModiferMenu.add(this.addTrueClientIP);
+        this.httpHeadModiferMenu.add(this.addClientIP);
+        this.httpHeadModiferMenu.add(this.addXClientIP);
+        this.httpHeadModiferMenu.add(this.addXRealIP);
+        this.httpHeadModiferMenu.add(this.addAllIP);
+        this.httpHeadModiferMenu.addSeparator();
+        this.httpHeadModiferMenu.add(this.firefoxUA);
+        this.httpHeadModiferMenu.add(this.chromeUA);
+        this.httpHeadModiferMenu.add(this.edgeUA);
+        this.httpHeadModiferMenu.add(this.ieUA);
+        this.httpHeadModiferMenu.add(this.operaUA);
+        this.httpHeadModiferMenu.add(this.safariUA);
+        this.httpHeadModiferMenu.add(this.androidUA);
+        this.httpHeadModiferMenu.add(this.winPhoneUA);
+        this.httpHeadModiferMenu.add(this.iosUA);
+        this.httpHeadModiferMenu.add(this.spiderUA);
+        this.httpHeadModiferMenu.addSeparator();
+        this.httpHeadModiferMenu.add(this.addOrigin);
+        this.httpHeadModiferMenu.addSeparator();
+        this.httpHeadModiferMenu.add(this.updateCookie);
+        this.addXFF.addActionListener(new MenuActionManger(invocation));
+        this.addXForwardedHost.addActionListener(new MenuActionManger(invocation));
+        this.addXRI.addActionListener(new MenuActionManger(invocation));
+        this.addXOI.addActionListener(new MenuActionManger(invocation));
+        this.addXRA.addActionListener(new MenuActionManger(invocation));
+        this.addTrueClientIP.addActionListener(new MenuActionManger(invocation));
+        this.addClientIP.addActionListener(new MenuActionManger(invocation));
+        this.addXClientIP.addActionListener(new MenuActionManger(invocation));
+        this.addXRealIP.addActionListener(new MenuActionManger(invocation));
+        this.addAllIP.addActionListener(new MenuActionManger(invocation));
+        this.ffAndroidMobileUA.addActionListener(new MenuActionManger(invocation));
+        this.ffAndroidTableUA.addActionListener(new MenuActionManger(invocation));
+        this.ffMacUA.addActionListener(new MenuActionManger(invocation));
+        this.ffUbuntuUA.addActionListener(new MenuActionManger(invocation));
+        this.ffWinUA.addActionListener(new MenuActionManger(invocation));
+        this.chromeAndroidMobileUA.addActionListener(new MenuActionManger(invocation));
+        this.chromeAndroidTableUA.addActionListener(new MenuActionManger(invocation));
+        this.chromeMacUA.addActionListener(new MenuActionManger(invocation));
+        this.chromeUbuntuUA.addActionListener(new MenuActionManger(invocation));
+        this.chromeWinUA.addActionListener(new MenuActionManger(invocation));
+        this.chromeiPhoneUA.addActionListener(new MenuActionManger(invocation));
+        this.edge12UA.addActionListener(new MenuActionManger(invocation));
+        this.edge13UA.addActionListener(new MenuActionManger(invocation));
+        this.ie11UA.addActionListener(new MenuActionManger(invocation));
+        this.ie10UA.addActionListener(new MenuActionManger(invocation));
+        this.ie9UA.addActionListener(new MenuActionManger(invocation));
+        this.ie8UA.addActionListener(new MenuActionManger(invocation));
+        this.ie7UA.addActionListener(new MenuActionManger(invocation));
+        this.ie6UA.addActionListener(new MenuActionManger(invocation));
+        this.operaMacUA.addActionListener(new MenuActionManger(invocation));
+        this.operaWinUA.addActionListener(new MenuActionManger(invocation));
+        this.safariiPadUA.addActionListener(new MenuActionManger(invocation));
+        this.safariiPhoneUA.addActionListener(new MenuActionManger(invocation));
+        this.safariMacUA.addActionListener(new MenuActionManger(invocation));
+        this.safariWinUA.addActionListener(new MenuActionManger(invocation));
+        this.androidNexus7UA.addActionListener(new MenuActionManger(invocation));
+        this.androidGalaxyS3UA.addActionListener(new MenuActionManger(invocation));
+        this.androidGalaxyTabUA.addActionListener(new MenuActionManger(invocation));
+        this.win7PhoneUA.addActionListener(new MenuActionManger(invocation));
+        this.win75PhoneUA.addActionListener(new MenuActionManger(invocation));
+        this.win8PhoneUA.addActionListener(new MenuActionManger(invocation));
+        this.iosiPadUA.addActionListener(new MenuActionManger(invocation));
+        this.iosiPhoneUA.addActionListener(new MenuActionManger(invocation));
+        this.iosiPodUA.addActionListener(new MenuActionManger(invocation));
+        this.baiduSpider4pcUA.addActionListener(new MenuActionManger(invocation));
+        this.baiduSpider4appUA.addActionListener(new MenuActionManger(invocation));
+        this.googleSpiderUA.addActionListener(new MenuActionManger(invocation));
+        this.bingSpiderUA.addActionListener(new MenuActionManger(invocation));
+        this.slurpSpiderUA.addActionListener(new MenuActionManger(invocation));
+        this.addOrigin.addActionListener(new MenuActionManger(invocation));
+        this.updateCookie.addActionListener(new MenuActionManger(invocation));
+        menus.add(this.httpHeadModiferMenu);
         return menus;
     }
     
-    
-    public class MenuActionManger implements ActionListener{
-    	private IContextMenuInvocation invocation;
-    	
-    	public MenuActionManger(final IContextMenuInvocation invocation) {
-			this.invocation = invocation;
-		}
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			IHttpRequestResponse iReqResp = invocation.getSelectedMessages()[0];
-			byte[] request = null;
+    public class MenuActionManger implements ActionListener
+    {
+        private IContextMenuInvocation invocation;
+        
+        public MenuActionManger(final IContextMenuInvocation invocation) {
+            this.invocation = invocation;
+        }
+        
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            final IHttpRequestResponse iReqResp = this.invocation.getSelectedMessages()[0];
+            byte[] request = null;
             try {
-				if(e.getSource() == addXFF){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-Forwarded-For");
-				}
-				
-				if(e.getSource() == addXForwardedHost){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-Forwarded-Host");
-				}
-				
-				if(e.getSource() == addXRI){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-remote-IP");
-				}
-				
-				if(e.getSource() == addXOI){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-Originating-IP");
-				}
-				
-				if(e.getSource() == addXRA){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-remote-addr");
-				}
-				
-				if(e.getSource() == addTrueClientIP){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"True-Client-IP");
-				}
-				
-				if(e.getSource() == addClientIP){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"Client-IP");
-				}
-				
-				if(e.getSource() == addXClientIP){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-Client-IP");
-				}
-				
-				if(e.getSource() == addXRealIP){
-					request = Utilities.addIPHead(m_helpers, iReqResp,"X-Real-IP");
-				}
-				
-				if(e.getSource() == ffAndroidMobileUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "FFAndroidHandset");
-				}
-				
-				if(e.getSource() == ffAndroidTableUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "FFAndroidTablet");
-				}
-				
-				if(e.getSource() == ffMacUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "FFMac");
-				}
-
-				if(e.getSource() == ffUbuntuUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "FFUbuntu");
-				}
-
-				if(e.getSource() == ffWinUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "FFWin");
-				}
-				
-				if(e.getSource() == chromeAndroidMobileUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "ChromeAndroidMobile");
-				}
-				
-				if(e.getSource() == chromeAndroidTableUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "ChromeAndroidTablet");
-				}
-				
-				if(e.getSource() == chromeMacUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "ChromeMac");
-				}
-				
-				if(e.getSource() == chromeUbuntuUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "ChromeUbuntu");
-				}
-				
-				if(e.getSource() == chromeWinUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "ChromeWin");
-				}
-				
-				if(e.getSource() == chromeiPhoneUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "ChromeiPhone");
-				}
-				
-				if(e.getSource() == edge12UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Edge12");
-				}
-				
-				if(e.getSource() == edge13UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Edge13");
-				}		
-				
-				if(e.getSource() == ie11UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "IE11");
-				}
-				
-				if(e.getSource() == ie10UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "IE10");
-				}
-				
-				if(e.getSource() == ie9UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "IE9");
-				}
-				
-				if(e.getSource() == ie8UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "IE8");
-				}
-				
-				if(e.getSource() == ie7UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "IE7");
-				}
-				
-				if(e.getSource() == ie6UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "IE6");
-				}
-				
-				if(e.getSource() == operaMacUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "OperaMac");
-				}
-				
-				if(e.getSource() == operaWinUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "OperaWin");
-				}
-				
-				if(e.getSource() == safariiPadUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "SafariiPad");
-				}
-				
-				if(e.getSource() == safariiPhoneUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "SafariiPhone");
-				}
-				
-				if(e.getSource() == safariMacUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "SafariMac");
-				}
-				
-				if(e.getSource() == safariWinUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "SafariWin");
-				}
-				
-				if(e.getSource() == androidNexus7UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Nexus7");
-				}
-				
-				if(e.getSource() == androidGalaxyS3UA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "AndroidGalaxyS3");
-				}
-				
-				if(e.getSource() == androidGalaxyTabUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "AndroidGalaxyTab");
-				}
-				
-				if(e.getSource() == win7PhoneUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Win7Phone");
-				}
-				
-				if(e.getSource() == win75PhoneUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Win75Phone");
-				}
-				
-				if(e.getSource() == win8PhoneUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Win8Phone");
-				}
-				
-				if(e.getSource() == iosiPadUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "iPad");
-				}
-				
-				if(e.getSource() == iosiPhoneUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "iPhone");
-				}
-				
-				if(e.getSource() == iosiPodUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "iPod");
-				}
-				
-				if(e.getSource() == baiduSpider4pcUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Baidu_pc");
-				}
-				
-				if(e.getSource() == baiduSpider4appUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Baidu_app");
-				}
-				
-				if(e.getSource() == googleSpiderUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Googlebot");
-				}
-				
-				if(e.getSource() == bingSpiderUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "BingBot");
-				}
-				
-				if(e.getSource() == slurpSpiderUA){
-					request = Utilities.modifyUserAgent(m_helpers, iReqResp, "Slurp");
-				}
-				
-				if(e.getSource() == addOrigin){
-					request = Utilities.addOrigin(m_helpers, iReqResp);
-				}
-				
-				if(e.getSource() == updateCookie){
-					request = Utilities.updateCookie(callbacks, m_helpers, iReqResp);
-				}
-				
-            } catch (Exception e1) {
-                stderr.println(e1.getMessage());
+                if (e.getSource() == Menu.this.addAllIP) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "AllIP");
+                }
+                if (e.getSource() == Menu.this.addXFF) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-Forwarded-For");
+                }
+                if (e.getSource() == Menu.this.addXForwardedHost) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-Forwarded-Host");
+                }
+                if (e.getSource() == Menu.this.addXRI) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-remote-IP");
+                }
+                if (e.getSource() == Menu.this.addXOI) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-Originating-IP");
+                }
+                if (e.getSource() == Menu.this.addXRA) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-remote-addr");
+                }
+                if (e.getSource() == Menu.this.addTrueClientIP) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "True-Client-IP");
+                }
+                if (e.getSource() == Menu.this.addClientIP) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "Client-IP");
+                }
+                if (e.getSource() == Menu.this.addXClientIP) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-Client-IP");
+                }
+                if (e.getSource() == Menu.this.addXRealIP) {
+                    request = Utilities.addIPHead(Menu.this.m_helpers, iReqResp, "X-Real-IP");
+                }
+                if (e.getSource() == Menu.this.ffAndroidMobileUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "FFAndroidHandset");
+                }
+                if (e.getSource() == Menu.this.ffAndroidTableUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "FFAndroidTablet");
+                }
+                if (e.getSource() == Menu.this.ffMacUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "FFMac");
+                }
+                if (e.getSource() == Menu.this.ffUbuntuUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "FFUbuntu");
+                }
+                if (e.getSource() == Menu.this.ffWinUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "FFWin");
+                }
+                if (e.getSource() == Menu.this.chromeAndroidMobileUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "ChromeAndroidMobile");
+                }
+                if (e.getSource() == Menu.this.chromeAndroidTableUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "ChromeAndroidTablet");
+                }
+                if (e.getSource() == Menu.this.chromeMacUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "ChromeMac");
+                }
+                if (e.getSource() == Menu.this.chromeUbuntuUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "ChromeUbuntu");
+                }
+                if (e.getSource() == Menu.this.chromeWinUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "ChromeWin");
+                }
+                if (e.getSource() == Menu.this.chromeiPhoneUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "ChromeiPhone");
+                }
+                if (e.getSource() == Menu.this.edge12UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Edge12");
+                }
+                if (e.getSource() == Menu.this.edge13UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Edge13");
+                }
+                if (e.getSource() == Menu.this.ie11UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "IE11");
+                }
+                if (e.getSource() == Menu.this.ie10UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "IE10");
+                }
+                if (e.getSource() == Menu.this.ie9UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "IE9");
+                }
+                if (e.getSource() == Menu.this.ie8UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "IE8");
+                }
+                if (e.getSource() == Menu.this.ie7UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "IE7");
+                }
+                if (e.getSource() == Menu.this.ie6UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "IE6");
+                }
+                if (e.getSource() == Menu.this.operaMacUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "OperaMac");
+                }
+                if (e.getSource() == Menu.this.operaWinUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "OperaWin");
+                }
+                if (e.getSource() == Menu.this.safariiPadUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "SafariiPad");
+                }
+                if (e.getSource() == Menu.this.safariiPhoneUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "SafariiPhone");
+                }
+                if (e.getSource() == Menu.this.safariMacUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "SafariMac");
+                }
+                if (e.getSource() == Menu.this.safariWinUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "SafariWin");
+                }
+                if (e.getSource() == Menu.this.androidNexus7UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Nexus7");
+                }
+                if (e.getSource() == Menu.this.androidGalaxyS3UA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "AndroidGalaxyS3");
+                }
+                if (e.getSource() == Menu.this.androidGalaxyTabUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "AndroidGalaxyTab");
+                }
+                if (e.getSource() == Menu.this.win7PhoneUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Win7Phone");
+                }
+                if (e.getSource() == Menu.this.win75PhoneUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Win75Phone");
+                }
+                if (e.getSource() == Menu.this.win8PhoneUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Win8Phone");
+                }
+                if (e.getSource() == Menu.this.iosiPadUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "iPad");
+                }
+                if (e.getSource() == Menu.this.iosiPhoneUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "iPhone");
+                }
+                if (e.getSource() == Menu.this.iosiPodUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "iPod");
+                }
+                if (e.getSource() == Menu.this.baiduSpider4pcUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Baidu_pc");
+                }
+                if (e.getSource() == Menu.this.baiduSpider4appUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Baidu_app");
+                }
+                if (e.getSource() == Menu.this.googleSpiderUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Googlebot");
+                }
+                if (e.getSource() == Menu.this.bingSpiderUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "BingBot");
+                }
+                if (e.getSource() == Menu.this.slurpSpiderUA) {
+                    request = Utilities.modifyUserAgent(Menu.this.m_helpers, iReqResp, "Slurp");
+                }
+                if (e.getSource() == Menu.this.addOrigin) {
+                    request = Utilities.addOrigin(Menu.this.m_helpers, iReqResp);
+                }
+                if (e.getSource() == Menu.this.updateCookie) {
+                    request = Utilities.updateCookie(Menu.this.callbacks, Menu.this.m_helpers, iReqResp);
+                }
             }
-            
-			if (request != null) {
+            catch (Exception e2) {
+                Menu.this.stderr.println(e2.getMessage());
+            }
+            if (request != null) {
                 iReqResp.setRequest(request);
-            }           
-		}
+            }
+        }
     }
 }
