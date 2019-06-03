@@ -1,7 +1,7 @@
 # HTTPHeadModifer
 一款快速修改HTTP数据包头的Burp Suite插件
 
-![HTTPHeadModifer插件菜单](doc/HTTPHeadModifer.png)
+![HTTPHeadModifer插件菜单](HTTPHeadModifer.png)
 
 ## 一、插件功能
 #### 1.添加IP相关的HTTP头
@@ -18,6 +18,7 @@
 |7|Client-IP||
 |8|X-Client-IP||
 |9|X-Real-IP||
+|10|All-IP(懒人)||
 
 #### 2.切换User-Agent
 作用：快速切换各大浏览器在不同平台下的User-Agetn。
@@ -46,11 +47,3 @@ PS：数据来源于Chrome浏览器插件`User-Agent Switcher for Google Chrome`
 
 #### 4.更新Cookie
 作用：方便更新数据包为最新可用Cookie。
-
-**注意：**
-
-* 该功能代码存在问题，正在排查。
-* 实现代码来自项目[knife](https://github.com/bit4woo/knife)。
-
-## 二、最后的话
-**HTTPHeadModifer** 插件的目的在于 **收集渗透测试过程中涉及的HTTP头，方便我们快速添加到数据包中进行测试** 。如有一些遗漏的HTTP头，欢迎补充！
